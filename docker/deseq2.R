@@ -66,12 +66,20 @@ baseMeanB = rowMeans(counts(dds,normalized=TRUE)[,dds$condition == CONDITION_B])
 res = cbind(rownames(res), res[,1],baseMeanA, baseMeanB, as.data.frame(res[,2:n])) 
 colnames(res) = c('Gene', 'overall_mean', CONDITION_A, CONDITION_B, original_colnames[2:n])
 resOrdered <- res[order(res$padj),]
-output_filename <- paste(OUTPUT_DESEQ_FILE_BASE, contrast_str, 'tsv', sep='.')
-write.table(resOrdered, output_filename, sep='\t', quote=F, row.names=F)
+fout1 <- paste(OUTPUT_DESEQ_FILE_BASE, contrast_str, 'tsv', sep='.')
+fout1 <- paste(working_dir, fout1, sep='/')
+write.table(resOrdered, fout1, sep='\t', quote=F, row.names=F)
 
 # extract and output the normalized counts:
 dds <- estimateSizeFactors(dds)
 nc <- counts(dds, normalized=TRUE)
 nc <- cbind(gene=rownames(nc), nc)
-output_filename <- paste(OUTPUT_NORMALIZED_COUNTS_BASE, contrast_str, 'tsv', sep='.')
-write.table(nc, output_filename, sep='\t', quote=F, row.names=F)
+fout2 <- paste(OUTPUT_NORMALIZED_COUNTS_BASE, contrast_str, 'tsv', sep='.')
+fout2 <- paste(working_dir, fout2, sep='/')
+write.table(nc, fout2, sep='\t', quote=F, row.names=F)
+
+json_str = paste0(
+	'{"dge_results":"', fout1, '",',
+	'"normalized_counts":"', fout2, '"}'
+)
+write(json_str, 'outputs.json')
