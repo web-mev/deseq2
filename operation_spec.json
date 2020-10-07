@@ -61,7 +61,7 @@
                 "resource_type": "EXP_MTX",
                 "many": false
             }
-        },
+        }
     }, 
     "mode": "local_docker"
 }
