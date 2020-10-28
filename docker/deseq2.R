@@ -8,7 +8,6 @@ EXPERIMENTAL_CONDITION_SAMPLES <- args[3]
 CONDITION_A<-args[4]
 CONDITION_B<-args[5]
 OUTPUT_DESEQ_FILE_BASE <- 'deseq2_results'
-OUTPUT_NORMALIZED_COUNTS_BASE <- 'deseq2_normalized_counts'
 
 # change the working directory to co-locate with the counts file:
 working_dir <- dirname(RAW_COUNT_MATRIX)
@@ -66,20 +65,23 @@ baseMeanB = rowMeans(counts(dds,normalized=TRUE)[,dds$condition == CONDITION_B])
 res = cbind(rownames(res), res[,1],baseMeanA, baseMeanB, as.data.frame(res[,2:n])) 
 colnames(res) = c('Gene', 'overall_mean', CONDITION_A, CONDITION_B, original_colnames[2:n])
 resOrdered <- res[order(res$padj),]
-fout1 <- paste(OUTPUT_DESEQ_FILE_BASE, contrast_str, 'tsv', sep='.')
-fout1 <- paste(working_dir, fout1, sep='/')
-write.table(resOrdered, fout1, sep='\t', quote=F, row.names=F)
 
 # extract and output the normalized counts:
 dds <- estimateSizeFactors(dds)
 nc <- counts(dds, normalized=TRUE)
 nc <- cbind(gene=rownames(nc), nc)
-fout2 <- paste(OUTPUT_NORMALIZED_COUNTS_BASE, contrast_str, 'tsv', sep='.')
-fout2 <- paste(working_dir, fout2, sep='/')
-write.table(nc, fout2, sep='\t', quote=F, row.names=F)
+
+# merge to create a single table
+m <- merge(resOrdered, nc, by="row.names")
+rownames(m) <- m[,'Row.names']
+drops <- c("Row.names", "Gene", "gene")
+m <- m[, !(names(m) %in% drops)]
+output_filename <- paste(OUTPUT_DESEQ_FILE_BASE, contrast_str, 'tsv', sep='.')
+output_filename <- paste(working_dir, output_filename, sep='/')
+write.table(m, output_filename, sep='\t', quote=F)
 
 json_str = paste0(
-	'{"dge_results":"', fout1, '",',
-	'"normalized_counts":"', fout2, '"}'
+       '{"dge_results":"', output_filename, '"}'
 )
 write(json_str, 'outputs.json')
+
