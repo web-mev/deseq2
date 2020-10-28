@@ -88,5 +88,6 @@ json_str = paste0(
        '{"dge_results":"', output_filename, '",',
        '"normalized_counts":"', fout2, '"}'
 )
-write(json_str, 'outputs.json')
+output_json <- paste(working_dir, 'outputs.json', sep='/')
+write(json_str, output_json)
 
