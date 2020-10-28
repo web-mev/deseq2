@@ -8,6 +8,7 @@ EXPERIMENTAL_CONDITION_SAMPLES <- args[3]
 CONDITION_A<-args[4]
 CONDITION_B<-args[5]
 OUTPUT_DESEQ_FILE_BASE <- 'deseq2_results'
+OUTPUT_NORMALIZED_COUNTS_BASE <- 'deseq2_normalized_counts'
 
 # change the working directory to co-locate with the counts file:
 working_dir <- dirname(RAW_COUNT_MATRIX)
@@ -70,8 +71,11 @@ resOrdered <- res[order(res$padj),]
 dds <- estimateSizeFactors(dds)
 nc <- counts(dds, normalized=TRUE)
 nc <- cbind(gene=rownames(nc), nc)
+fout2 <- paste(OUTPUT_NORMALIZED_COUNTS_BASE, contrast_str, 'tsv', sep='.')
+fout2 <- paste(working_dir, fout2, sep='/')
+write.table(nc, fout2, sep='\t', quote=F, row.names=F)
 
-# merge to create a single table
+# merge to create a single table, which makes frontend work easier
 m <- merge(resOrdered, nc, by="row.names")
 rownames(m) <- m[,'Row.names']
 drops <- c("Row.names", "Gene", "gene")
@@ -81,7 +85,8 @@ output_filename <- paste(working_dir, output_filename, sep='/')
 write.table(m, output_filename, sep='\t', quote=F)
 
 json_str = paste0(
-       '{"dge_results":"', output_filename, '"}'
+       '{"dge_results":"', output_filename, '",',
+       '"normalized_counts":"', fout2, '"}'
 )
 write(json_str, 'outputs.json')
 
