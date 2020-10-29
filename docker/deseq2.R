@@ -57,7 +57,27 @@ dds <- DESeqDataSetFromMatrix(countData = count_data,
 							  colData = annotations,
 							  design = ~condition)
 
-dds <- DESeq(dds)
+
+# wraps the typical DESeq call to catch edge cases where the 
+# table of expressions is small and we cannot use the typical
+# methods to estimate the mean-dispersion relationship.
+run_dge_func <- function(dds){
+    tryCatch(
+        {
+            dds <- DESeq(dds)
+            return (dds)
+        },
+        error=function(x){
+            dds <- estimateSizeFactors(dds)
+            dds <- estimateDispersionsGeneEst(dds)
+            dispersions(dds) <- mcols(dds)$dispGeneEst
+            dds <- nbinomWaldTest(dds)
+            return (dds)
+        }
+    )
+}
+
+dds <- run_dge_func(dds)
 res <- results(dds, cooksCutoff=F, contrast=c("condition", CONDITION_B, CONDITION_A))
 original_colnames = colnames(res)
 n = length(original_colnames)
