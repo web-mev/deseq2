@@ -52,6 +52,10 @@ annotations <- annotations[-1]
 # Need to set the condition as a factor since it's going to be used as a design matrix
 annotations$condition <- as.factor(annotations$condition)
 
+if (dim(count_data)[2] == 0){
+    message('After subsetting the matrix for the samples of interest, the matrix was empty. Please check the input samples and matrix')
+    quit(status=1)
+}
 # run the actual differential expression:
 dds <- DESeqDataSetFromMatrix(countData = count_data,
 							  colData = annotations,
