@@ -1,4 +1,4 @@
-if(!require("DESeq2", character.only=T)) stop("Please install the DESeq2 package first.")
+suppressMessages(suppressWarnings(library("DESeq2", character.only=T, warn.conflicts = F, quietly = T)))
 
 # args from command line:
 args<-commandArgs(TRUE)
