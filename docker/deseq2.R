@@ -104,6 +104,12 @@ m <- merge(resOrdered, nc, by="row.names")
 rownames(m) <- m[,'Row.names']
 drops <- c("Row.names", "Gene", "gene")
 m <- m[, !(names(m) %in% drops)]
+
+# change column name for the 'stat' column which will match other dge-type analyses
+cols <- colnames(m)
+cols[which(names(m) == 'stat')] = 'statistic'
+colnames(m) <- cols
+
 output_filename <- paste(OUTPUT_DESEQ_FILE_BASE, contrast_str, 'tsv', sep='.')
 output_filename <- paste(working_dir, output_filename, sep='/')
 write.table(m, output_filename, sep='\t', quote=F)
