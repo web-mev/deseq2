@@ -24,6 +24,16 @@ contrast_str = paste0(CONDITION_B, '_vs_', CONDITION_A)
 # the sample names are given as a comma-delimited string. Split them
 base_samples <- make.names(strsplit(BASE_CONDITION_SAMPLES, ',')[[1]])
 exp_samples <- make.names(strsplit(EXPERIMENTAL_CONDITION_SAMPLES, ',')[[1]])
+intersection_list = intersect(base_samples, exp_samples)
+
+if (length(intersection_list) > 0){
+    sample_list = paste0(intersection_list, collapse=',')
+    message(paste(
+       'The following samples were in both contrast groups. Fix this and try again: ',
+       sample_list
+    ))
+    quit(status=1)
+}
 all_samples <- c(base_samples, exp_samples)
 
 condition_a_list <- rep(CONDITION_A, length(base_samples))
