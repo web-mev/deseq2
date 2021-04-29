@@ -22,8 +22,11 @@ CONDITION_B <- make.names(CONDITION_B)
 contrast_str = paste0(CONDITION_B, '_vs_', CONDITION_A)
 
 # the sample names are given as a comma-delimited string. Split them
-base_samples <- make.names(strsplit(BASE_CONDITION_SAMPLES, ',')[[1]])
-exp_samples <- make.names(strsplit(EXPERIMENTAL_CONDITION_SAMPLES, ',')[[1]])
+orig_base_samples = strsplit(BASE_CONDITION_SAMPLES, ',')[[1]]
+base_samples <- make.names(orig_base_samples)
+orig_exp_samples <- strsplit(EXPERIMENTAL_CONDITION_SAMPLES, ',')[[1]]
+exp_samples <- make.names(orig_exp_samples)
+
 intersection_list = intersect(base_samples, exp_samples)
 
 if (length(intersection_list) > 0){
@@ -35,6 +38,11 @@ if (length(intersection_list) > 0){
     quit(status=1)
 }
 all_samples <- c(base_samples, exp_samples)
+original_sample_names <- c(orig_base_samples, orig_exp_samples)
+colname_mapping = data.frame(
+    orig_names = original_sample_names,
+    row.names=all_samples,
+    stringsAsFactors=F)
 
 condition_a_list <- rep(CONDITION_A, length(base_samples))
 condition_b_list <- rep(CONDITION_B, length(exp_samples))
@@ -104,6 +112,11 @@ resOrdered <- res[order(res$padj),]
 # extract and output the normalized counts:
 dds <- estimateSizeFactors(dds)
 nc <- counts(dds, normalized=TRUE)
+
+# map the potentially 'mangled' names back to the original
+nc_cols = colnames(nc)
+remapped_cols = colname_mapping[nc_cols, 'orig_names']
+colnames(nc) = remapped_cols
 nc <- cbind(gene=rownames(nc), nc)
 fout2 <- paste(OUTPUT_NORMALIZED_COUNTS_BASE, contrast_str, 'tsv', sep='.')
 fout2 <- paste(working_dir, fout2, sep='/')
