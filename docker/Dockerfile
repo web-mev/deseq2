@@ -22,12 +22,13 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -
 ENV PATH="/opt/software/miniconda/bin:${PATH}"
 
 # Install DESeq2 and dependencies:
-ADD spec_file.txt /opt/software/
-RUN conda create --name deseq2_env --file /opt/software/spec_file.txt
 ADD deseq2.R /opt/software/
+ADD environment.yml /opt/software/
+
+# Build the deseq2 environment based on the yml file
+RUN conda env create -f /opt/software/environment.yml
 
 # add to the PATH. Otherwise, conda can swallow return codes
 ENV PATH="/opt/software/miniconda/envs/deseq2_env/bin:${PATH}"
 
 ENTRYPOINT ["/bin/bash"]
-
