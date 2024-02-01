@@ -18,30 +18,20 @@ Either:
 - build the Docker image using the contents of the `docker/` folder (e.g. `docker build -t myuser/deseq2:v1 .`) 
 - pull the docker image from the GitHub container repository (see https://github.com/web-mev/deseq2/pkgs/container/deseq2)
 
-To run, enter the container in an interactive shell:
+To run, move into a directory where you have your files (namely, the raw count matrix). Then run:
 ```
-docker run -it -v$PWD:/work <IMAGE>
-```
-(here, we mount the current directory to `/work` inside the container)
-
-Activate the conda environment:
-```
-conda activate deseq2
-```
-
-Then, run the script:
-```
-Rscript /opt/software/deseq2.R \
-    <path to raw/integer counts> \
+docker run -it -v $PWD:/work <IMAGE>  Rscript /usr/local/bin/deseq2.R \
+    /work/<raw/integer counts filename> \
     <base/control condition samples as CSV-string> \
     <experimental condition samples as CSV-string> \
     <base/control condition name> \
     <experimental condition name>
-
 ```
+Here, we mount the current directory to `/work` inside the container which is why the raw count matrix is located at `/work/<integer counts filename>`
+
 The call to the script assumes the following:
 - The input file of expression counts is tab-delimited format and contains only integer entries
-- The samples in either the control or experimental groups are given as comma-delimited strings and correspond to the column names contained in the raw count matrix. As an example, if the base/control samples are A, B, and C, specify: `"A,B,C"`. The wrapping quotations are not necessary unless the sample names contain whitespace.
+- The samples in either the control or experimental groups are given as comma-delimited strings and correspond to the column names contained in the raw count matrix. As an example, if the base/control samples are A, B, and C, specify: `"A,B,C"`. The wrapping quotations are not necessary unless the sample names contain whitespace like `"sample A,sample B,sample C"`.
 - The condition names are regular strings used to help with naming the output file.
 - The output files will be written to the same directory where the input/raw counts file is located.
 
