@@ -31,8 +31,8 @@ if (!(ANN_COL %in% colnames(annotations))) {
 }
 
 # filter to only those samples which match the conditions
-base_samples_filter <- annotations[, ANN_COL] == CONDITION_A
-exp_samples_filter <- annotations[, ANN_COL] == CONDITION_B
+base_samples_filter <- make.names(annotations[, ANN_COL]) == CONDITION_A
+exp_samples_filter <- make.names(annotations[, ANN_COL]) == CONDITION_B
 orig_base_samples <- rownames(annotations)[base_samples_filter]
 orig_exp_samples <- rownames(annotations)[exp_samples_filter]
 base_samples <- make.names(orig_base_samples)
