@@ -34,7 +34,7 @@
                 "default": "Control"
             }
         },
-        "base_condition_name": {
+        "group1": {
             "description": "The condition that should be considered as the \"control\" or \"baseline\".", 
             "name": "Base condition:", 
             "required": false,
@@ -44,7 +44,7 @@
                 "default": "Control"
             }
         },
-        "experimental_condition_name": {
+        "group2": {
             "description": "The condition that should be considered as the \"non-control\" or \"experimental\".", 
             "name": "Experimental/treated condition", 
             "required": false, 
