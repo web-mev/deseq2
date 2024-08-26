@@ -1,1 +1,1 @@
-Rscript /usr/local/bin/deseq2.R {{raw_counts}} {{annotations}} {{ann_col}} {{group1}} {{group2}}
+Rscript /usr/local/bin/deseq2.R {{raw_counts}} {{annotations}} "{{ann_col}}" "{{group1}}" "{{group2}}"
